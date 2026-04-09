@@ -15,8 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PokéPandas — Pandas 시각화 학습 도구",
-  description: "고등학생을 위한 Pandas 데이터 추출 단계별 시각화 학습 도구",
+  title: "PokéPandas — Pandas 시각화 학습 사이트",
+  description:
+    "고등학생을 위한 컴퓨터과학 교육 프로젝트 — Pandas 데이터 추출·인덱싱을 단계별 애니메이션으로 배우는 학습 도구",
 };
 
 export default function RootLayout({

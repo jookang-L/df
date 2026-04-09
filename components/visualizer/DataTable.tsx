@@ -15,6 +15,14 @@ function typeColor(val: string | number | boolean): string {
   if (typeof val === "number") return "text-blue-700";
   const s = String(val);
   const typeColors: Record<string, string> = {
+    // 한글 타입 (missionData 기준)
+    불꽃: "text-orange-600", 물: "text-blue-600", 풀: "text-green-600",
+    전기: "text-yellow-600", 에스퍼: "text-pink-600", 얼음: "text-cyan-600",
+    드래곤: "text-purple-700", 악: "text-gray-700", 격투: "text-red-700",
+    고스트: "text-indigo-600", 강철: "text-gray-500", 비행: "text-sky-500",
+    바위: "text-yellow-800", 땅: "text-amber-700", 벌레: "text-lime-600",
+    독: "text-violet-600", 노말: "text-gray-500", 페어리: "text-pink-500",
+    // 영문 (CSV 업로드 등 호환)
     Fire: "text-orange-600", Water: "text-blue-600", Grass: "text-green-600",
     Electric: "text-yellow-600", Psychic: "text-pink-600", Ice: "text-cyan-600",
     Dragon: "text-purple-700", Dark: "text-gray-700", Fighting: "text-red-700",

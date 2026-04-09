@@ -13,10 +13,10 @@ interface CodeTemplate {
 const TEMPLATES: CodeTemplate[] = [
   { label: "단일 열 선택", code: "df['Name']", desc: "특정 열을 선택합니다" },
   { label: "다중 열 선택", code: "df[['Name', 'Type 1', 'HP']]", desc: "여러 열을 동시에 선택합니다" },
-  { label: "불리언 필터", code: "df[df['Type 1'] == 'Fire']", desc: "조건에 맞는 행만 필터링합니다" },
+  { label: "불리언 필터", code: "df[df['Type 1'] == '불꽃']", desc: "조건에 맞는 행만 필터링합니다" },
   { label: "숫자 조건", code: "df[df['HP'] > 80]", desc: "숫자 비교로 행을 필터링합니다" },
   { label: "loc 필터", code: "df.loc[df['Legendary'] == True]", desc: "loc으로 조건 필터링합니다" },
-  { label: "loc 행+열", code: "df.loc[df['Type 1'] == 'Water', ['Name', 'HP']]", desc: "조건 + 열 동시 선택합니다" },
+  { label: "loc 행+열", code: "df.loc[df['Type 1'] == '물', ['Name', 'HP']]", desc: "조건 + 열 동시 선택합니다" },
   { label: "iloc 슬라이싱", code: "df.iloc[0:5]", desc: "행 번호로 범위 선택합니다" },
   { label: "iloc (앞부터)", code: "df.iloc[:5]", desc: "0부터 5 직전까지 (파이썬과 동일)" },
   { label: "복합 조건", code: "df[(df['HP'] > 90) & (df['Attack'] > 100)]", desc: "& 연산자로 조건을 결합합니다" },

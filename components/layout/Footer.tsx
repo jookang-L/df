@@ -13,7 +13,7 @@ export default function Footer() {
           <span className="text-xs">PokéPandas &mdash; Pandas 데이터 추출 시각화 학습 도구</span>
         </div>
         <p className="text-xs opacity-60">
-          고등학생을 위한 데이터 과학 교육 프로젝트
+          고등학생을 위한 컴퓨터과학 교육 프로젝트
         </p>
       </div>
     </footer>

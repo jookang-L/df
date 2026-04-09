@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Papa from "papaparse";
 import { Upload, Table2, BookOpen, X, AlertCircle } from "lucide-react";
@@ -28,11 +28,18 @@ function pokemonToDataRow(p: ReturnType<typeof getSamplePokemon>[0]): DataRow {
   };
 }
 
-const SAMPLE_DATA: DataRow[] = getSamplePokemon().map(pokemonToDataRow);
-
 export default function PracticePage() {
-  const [data, setData] = useState<DataRow[]>(SAMPLE_DATA);
-  const [columns, setColumns] = useState<string[]>(Object.keys(SAMPLE_DATA[0] || {}));
+  const [data, setData] = useState<DataRow[]>([]);
+  const [columns, setColumns] = useState<string[]>([]);
+  /** 샘플 랜덤은 SSR과 달라 Hydration 오류가 나므로 마운트 후에만 로드 */
+  const [sampleReady, setSampleReady] = useState(false);
+
+  useEffect(() => {
+    const sample = getSamplePokemon().map(pokemonToDataRow);
+    setData(sample);
+    setColumns(Object.keys(sample[0] || {}));
+    setSampleReady(true);
+  }, []);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<"sample" | "upload">("sample");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -123,9 +130,11 @@ export default function PracticePage() {
           <div>
             <h1 className="text-xl font-bold text-gray-800">자유 연습 모드</h1>
             <p className="text-sm text-gray-500">
-              {dataSource === "sample"
-                ? `포켓몬 샘플 데이터 (${data.length}행)`
-                : `업로드된 CSV (${data.length}행)`}
+              {!sampleReady
+                ? "샘플 데이터 준비 중…"
+                : dataSource === "sample"
+                  ? `포켓몬 샘플 데이터 (${data.length}행)`
+                  : `업로드된 CSV (${data.length}행)`}
             </p>
           </div>
           <div className="ml-auto flex gap-2">
@@ -176,8 +185,15 @@ export default function PracticePage() {
           )}
         </AnimatePresence>
 
-        {/* 드래그 앤 드롭 영역 (데이터 없을 때) */}
-        {data.length === 0 && (
+        {/* 초기 샘플 로딩 (Hydration 안전) */}
+        {!sampleReady && (
+          <div className="rounded-2xl border border-gray-200 bg-white p-16 text-center mb-6">
+            <p className="text-gray-500 text-sm">포켓몬 샘플 데이터를 불러오는 중…</p>
+          </div>
+        )}
+
+        {/* 드래그 앤 드롭 영역 (데이터 없을 때 · 샘플 로드 완료 후) */}
+        {sampleReady && data.length === 0 && (
           <div
             onDrop={handleDrop}
             onDragOver={(e) => e.preventDefault()}
@@ -192,7 +208,7 @@ export default function PracticePage() {
         )}
 
         {/* 메인 레이아웃 */}
-        {data.length > 0 && (
+        {sampleReady && data.length > 0 && (
           <div className="grid lg:grid-cols-[1fr_380px] gap-6">
             {/* 좌측: 테이블 */}
             <div className="space-y-4">

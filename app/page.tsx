@@ -6,7 +6,7 @@ import { BookOpen, Trophy, ChevronRight, Database, Zap, Eye } from "lucide-react
 
 const FEATURES = [
   { icon: Eye, text: "3단계 애니메이션으로 코드 실행 과정 시각화" },
-  { icon: Database, text: "실제 포켓몬 데이터로 학습 (800개 데이터)" },
+  { icon: Database, text: "실제 포켓몬 데이터 샘플 (800개 데이터)" },
   { icon: Zap, text: "KeyError, IndexError 등 에러 원인 시각화" },
 ];
 

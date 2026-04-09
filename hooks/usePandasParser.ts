@@ -375,6 +375,25 @@ export function validateMission(
   originalData: DataRow[]
 ): boolean {
   try {
+    // loc_filter_cols|열|값|열1,열2 — 파이프 형식에는 ':'가 없어 split(':')로는 타입이 잡히지 않음
+    if (validateFn.startsWith("loc_filter_cols|")) {
+      const parts = validateFn.split("|");
+      if (parts.length < 4) return false;
+      const col = parts[1].trim();
+      const valRaw = parts[2].trim();
+      const colsStr = parts.slice(3).join("|");
+      const cols = colsStr.split(",").map((c) => c.trim());
+      const expected = originalData.filter((r) => {
+        if (valRaw === "True" || valRaw === "true") return r[col] === true;
+        if (valRaw === "False" || valRaw === "false") return r[col] === false;
+        return String(r[col]) === valRaw;
+      });
+      const colsOk =
+        cols.length === resultColumns.length &&
+        cols.every((c) => resultColumns.includes(c));
+      return resultData.length === expected.length && colsOk;
+    }
+
     const [type, ...args] = validateFn.split(":");
 
     switch (type) {
@@ -416,20 +435,6 @@ export function validateMission(
       case "iloc_slice": {
         const [start, end] = args.map(Number);
         return resultData.length === end - start;
-      }
-      case "loc_filter_cols": {
-        const parts = validateFn.split("|");
-        if (parts.length < 4) return false;
-        const col = parts[1];
-        const valRaw = parts[2];
-        const colsStr = parts.slice(3).join("|");
-        const cols = colsStr.split(",").map((c) => c.trim());
-        const expected = originalData.filter((r) => {
-          if (valRaw === "True" || valRaw === "true") return r[col] === true;
-          if (valRaw === "False" || valRaw === "false") return r[col] === false;
-          return String(r[col]) === valRaw;
-        });
-        return resultData.length === expected.length && cols.every((c) => resultColumns.includes(c));
       }
       case "multi_condition": {
         const [col1, op1, val1, col2, op2, val2] = args;

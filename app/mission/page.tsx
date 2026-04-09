@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, ChevronRight, ChevronLeft, Star, Table2, RefreshCw, Shuffle } from "lucide-react";
 import CodeEditor from "@/components/editor/CodeEditor";
@@ -29,15 +29,22 @@ function pokemonToDataRow(p: ReturnType<typeof getSamplePokemon>[0]): DataRow {
 }
 
 export default function MissionPage() {
-  const [sessionMissions, setSessionMissions] = useState<Mission[]>(() => buildSessionMissions());
+  /** SSR과 클라이언트에서 Math.random() 결과가 달라지면 Hydration mismatch가 나므로, 마운트 후에만 채움 */
+  const [sessionMissions, setSessionMissions] = useState<Mission[]>([]);
+  const [pokemonData, setPokemonData] = useState<DataRow[]>([]);
   const [currentMissionIdx, setCurrentMissionIdx] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<Set<number>>(new Set());
   const [showSuccess, setShowSuccess] = useState(false);
   const [showAnswer, setShowAnswer] = useState(false);
-  const [pokemonData] = useState<DataRow[]>(() => getSamplePokemon().map(pokemonToDataRow));
+
+  useEffect(() => {
+    setPokemonData(getSamplePokemon().map(pokemonToDataRow));
+    setSessionMissions(buildSessionMissions());
+  }, []);
 
   const columns = useMemo(() => Object.keys(pokemonData[0] || {}), [pokemonData]);
   const currentMission = sessionMissions[currentMissionIdx];
+  const sessionReady = sessionMissions.length > 0 && pokemonData.length > 0;
 
   const { state, runCode, reset } = usePandasParser(pokemonData);
 
@@ -94,7 +101,15 @@ export default function MissionPage() {
   };
 
   const errorStep = state.currentStep.type === "error" ? state.currentStep : null;
-  const isCompleted = completedMissions.has(currentMissionIdx);
+  const isCompleted = sessionReady && completedMissions.has(currentMissionIdx);
+
+  if (!sessionReady || !currentMission) {
+    return (
+      <div className="flex-1 bg-gray-50 py-6 px-4 min-h-[50vh] flex items-center justify-center">
+        <p className="text-gray-500 text-sm">미션과 데이터를 불러오는 중…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 bg-gray-50 py-6 px-4">
