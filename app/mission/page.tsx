@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Trophy, ChevronRight, ChevronLeft, Star, Table2, RefreshCw, Shuffle } from "lucide-react";
+import { Trophy, ChevronRight, ChevronLeft, Star, Table2, Shuffle } from "lucide-react";
 import CodeEditor from "@/components/editor/CodeEditor";
 import DataTable from "@/components/visualizer/DataTable";
 import StepIndicator from "@/components/visualizer/StepIndicator";
@@ -38,7 +38,6 @@ export default function MissionPage() {
   const [currentMissionIdx, setCurrentMissionIdx] = useState(0);
   const [completedMissions, setCompletedMissions] = useState<Set<number>>(new Set());
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showAnswer, setShowAnswer] = useState(false);
   const [student, setStudent] = useState<StudentSessionPayload | null>(null);
   const [wrongAttemptsByMission, setWrongAttemptsByMission] = useState<Record<string, number>>({});
   const [earnedScoreMsg, setEarnedScoreMsg] = useState<string | null>(null);
@@ -61,7 +60,6 @@ export default function MissionPage() {
     setCompletedMissions(new Set());
     setWrongAttemptsByMission({});
     setShowSuccess(false);
-    setShowAnswer(false);
     setEarnedScoreMsg(null);
     reset();
   };
@@ -118,7 +116,6 @@ export default function MissionPage() {
   const handleReset = () => {
     reset();
     setShowSuccess(false);
-    setShowAnswer(false);
   };
 
   const goNext = () => {
@@ -386,40 +383,8 @@ export default function MissionPage() {
               onRun={handleRun}
               onReset={handleReset}
               isAnimating={state.isAnimating}
-              hint={currentMission.hint}
               columnNames={columns}
             />
-
-            {/* 정답 보기 */}
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-              <button
-                onClick={() => setShowAnswer((v) => !v)}
-                className="w-full flex items-center gap-2 px-4 py-3 text-sm text-gray-600 
-                           hover:bg-gray-50 transition-colors"
-              >
-                <RefreshCw className="w-4 h-4 text-gray-400" />
-                <span>정답 코드 확인 (스포일러 주의!)</span>
-                <span className="ml-auto text-xs text-gray-400">
-                  {showAnswer ? "숨기기" : "보기"}
-                </span>
-              </button>
-              <AnimatePresence>
-                {showAnswer && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="px-4 pb-4 bg-gray-50 border-t border-gray-200">
-                      <code className="text-sm font-mono text-green-700 block mt-2">
-                        {currentMission.targetCode}
-                      </code>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
 
             {/* 전체 진행도 */}
             <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4">
